@@ -1,0 +1,7 @@
+gradlew.bat text eol=crlf linguist-generated
+gradlew text eol=lf linguist-generated
+gradle/wrapper/** linguist-generated
+.github/** linguist-generated
+.gitignore linguist-generated
+.editorconfig linguist-generated
+.gitattributes linguist-generated

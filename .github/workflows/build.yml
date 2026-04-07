@@ -7,24 +7,32 @@ on:
     paths:
       - "src/main/java/**/*.java"
       - "src/test/java/**/*.java"
-      - "pom.xml"
+      - "!.editorconfig"
+      - "!.gitattributes"
       - "!.gitignore"
       - "!README.md"
       - "!README"
       - "!LICENSE"
       - "!COPYING"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
   pull_request:
     branches:
       - "master"
     paths:
       - "src/main/java/**/*.java"
       - "src/test/java/**/*.java"
-      - "pom.xml"
+      - "!.editorconfig"
+      - "!.gitattributes"
       - "!.gitignore"
       - "!README.md"
       - "!README"
       - "!LICENSE"
       - "!COPYING"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
   workflow_dispatch:
 
 
@@ -35,13 +43,10 @@ defaults:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    timeout-minutes: 5
-    runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }}
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
     permissions:
       contents: read
       checks: write
@@ -53,26 +58,26 @@ jobs:
 
       - uses: actions/setup-java@v5
         with:
-          java-version: 8
+          java-version: 17
           distribution: corretto
-          cache: "maven"
+          cache: "gradle"
 
-      - run: mvn -B -V -e -ntp -Dstyle.color=always clean verify
+      - run: ./gradlew build
+
+      - uses: PineBale/jacoco-csv-summary@v1.0.1
+        with:
+          csv-file: ./build/reports/jacoco/test/jacocoTestReport.csv
+          write-summary: true
+          write-check: true
+          check-name: Coverage
 
       - uses: mikepenz/action-junit-report@v6.4.0
         if: ${{ success() || failure() }}
         with:
-          report_paths: ./target/surefire-reports/TEST-*.xml
+          report_paths: ./build/test-results/test/TEST-*.xml
           include_passed: true
           detailed_summary: true
           fail_on_failure: true
           require_tests: true
-          check_name: Test Report (${{ matrix.os }})
+          check_name: Test Report
           check_title_template: '{{SUITE_NAME}} | {{TEST_NAME}}'
-
-      - uses: PineBale/jacoco-csv-summary@v1.0.1
-        with:
-          csv-file: ./target/jacoco-report/jacoco.csv
-          write-summary: true
-          write-check: true
-          check-name: Jacoco (${{ matrix.os }})
