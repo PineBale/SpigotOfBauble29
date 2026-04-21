@@ -15,7 +15,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("junit_version")}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.github.MockBukkit:MockBukkit:v1.8-spigot-SNAPSHOT")
+    testImplementation("dev.pinebale.minecraft.com.github.MockBukkit:MockBukkit")
 }
 
 java {
